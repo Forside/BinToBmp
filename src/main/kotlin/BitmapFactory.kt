@@ -142,7 +142,12 @@ class BitmapFactory {
 		return data.toByteArray()
 	}
 
-
+	/**
+	 * Adds padding to whole image and to the pixel line endings.
+	 *
+	 * @param   dimension   the desired image dimensions to reach
+	 * @return  new [ArrayList] containing the padded image data
+	 */
 	private fun padLines(dimension: Dimension): ArrayList<Byte> {
 		// expand the pixel data to fill the last line
 		var missing = dimension.width * dimension.height - imageData.size
