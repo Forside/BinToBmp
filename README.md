@@ -17,3 +17,5 @@ Upcoming features:
 - Sequential write to output file instead of generating the whole bitmap in memory before writing
 - Ability to sort all pixels by color and put them grouped into the bitmap
 - Progress bar
+- Name output file corresponding to input file
+- Ability to reverse convert bitmap

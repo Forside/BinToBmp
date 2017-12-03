@@ -135,10 +135,6 @@ class BitmapFactory {
 		writeInt(FILE_SIZE_OFFSET, data.size, 4)
 		writeInt(IMAGE_SIZE_OFFSET, paddedImageData.size+endPadding, 4)
 
-		//return data
-		/*val result = Array<Byte>(data.size, {0})
-		data.toArray(result)
-		return result*/
 		return data.toByteArray()
 	}
 
@@ -165,27 +161,11 @@ class BitmapFactory {
 
 
 		// add all pixels to the new array plus the padding for every line
-		// old method
-		/*for (y in 0 until dimension.height) {
-			for (x in 0 until dimension.width) {
-				val index = y * dimension.width + x
-				paddedImageData.add( if (index < imageData.size)
-					imageData[index] else
-					0
-				)
-			}
-			for (i in 0 until padding) {
-				paddedImageData.add(0)
-			}
-		}*/
-
-
-		// new method
 		for (i in 0 until imageData.size) {
-			if (i % dimension.width == 0 && i != 0)
+			paddedImageData.add(imageData[i])
+			if ((i+1) % dimension.width == 0)
 				for (p in 0 until padding)
 					paddedImageData.add(0)
-			paddedImageData.add(imageData[i])
 		}
 
 		return paddedImageData
@@ -200,22 +180,6 @@ class BitmapFactory {
 		val result = Dimension()
 
 		if (imageData.size > 0) {
-			// old method
-			/*val root = Math.sqrt(imageData.size.toDouble())
-			var widthI = Math.floor(root).toInt()
-			var heightI = widthI
-
-			var missing = imageData.size - (widthI * widthI)
-			while (missing > 0) {
-				if (widthI == heightI)
-					widthI++
-				else
-					heightI++
-				missing -= heightI
-			}*/
-
-
-			// new method
 			// get square root of image size
 			val root = Math.sqrt(imageData.size.toDouble())
 			// round down. this will be the smallest possible width and height
@@ -299,15 +263,10 @@ class BitmapFactory {
 	 * @return  Int         padding needed
 	 */
 	private fun getPadding(size: Int, multiple: Int): Int {
-		/*val padding = if (size % multiple == 0)
-			0 else
-			multiple - (size % multiple)*/
-
-		var padding = size % multiple
-		if (padding != 0)
-			padding = multiple - padding
-
-		return padding
+		val padding = size % multiple
+		return if (padding == 0)
+			padding else
+			multiple - padding
 	}
 
 }
