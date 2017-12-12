@@ -15,6 +15,8 @@
  * along with BinToBmp.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+package de.forside
+
 
 import org.json.JSONArray
 import java.awt.Dimension
@@ -22,6 +24,20 @@ import java.io.File
 import java.util.*
 
 class BitmapFactory {
+
+	// public static values
+	companion object {
+		val INTERACTION_CONV_START = 0
+		val INTERACTION_CONV_PROGRESS = 1
+		val INTERACTION_CONV_END = 2
+		val INTERACTION_READ = 3
+		val INTERACTION_INIT = 4
+		val INTERACTION_CANCEL = 5
+	}
+	// interaction handler
+	private var handler: Handler? = null
+
+	//private val jarLocation = File(URLDecoder.decode(BitmapFactory::class.java.protectionDomain.codeSource.location.path, "UTF-8")).parentFile
 
 	private val FILE_SIZE_OFFSET = 2
 	private val IMAGE_DATA_OFFSET_OFFSET = 10
@@ -41,7 +57,9 @@ class BitmapFactory {
 	 *
 	 * @return [BitmapFactory] object to be further used to add pixels and create the bitmap
 	 */
-	fun initialize(): BitmapFactory {
+	fun initialize(handler: Handler? = null): BitmapFactory {
+		this.handler = handler
+
 		// BITMAPFILEHEADER (14 bytes)
 		data.addAll(arrayOf<Byte>(
 			// 0x00 0 bfType: bitmap header
@@ -93,8 +111,12 @@ class BitmapFactory {
 			0, 0, 0, 0 // all colors
 		))
 
-		if (!writeColorTable())
+		if (!writeColorTable()) {
+			handler?.sendMessage(INTERACTION_CANCEL)
 			throw Exception("unable to load color palette")
+		}
+
+		handler?.sendMessage(INTERACTION_INIT)
 
 		return this
 	}
@@ -107,6 +129,11 @@ class BitmapFactory {
 	 */
 	fun addPixel(colorIndex: Byte): BitmapFactory {
 		imageData.add(colorIndex)
+		if (imageData.size % 10240 == 0) {
+			val bundle = Handler.Bundle()
+			bundle.putInt("kb", imageData.size / 1024)
+			handler?.sendMessage(INTERACTION_READ, bundle)
+		}
 		return this
 	}
 
@@ -123,6 +150,10 @@ class BitmapFactory {
 		// negative height to draw from top to bottom
 		writeInt(IMAGE_HEIGHT_OFFSET, -dimension.height, 4)
 
+		val bundle = Handler.Bundle()
+		bundle.putInt("size", imageData.size / 1024)
+		handler?.sendMessage(INTERACTION_CONV_START, bundle)
+
 		// add line ending paddings (each line has to have a length of a multiple of 4)
 		val paddedImageData = padLines(dimension)
 		data.addAll(paddedImageData)
@@ -134,6 +165,9 @@ class BitmapFactory {
 
 		writeInt(FILE_SIZE_OFFSET, data.size, 4)
 		writeInt(IMAGE_SIZE_OFFSET, paddedImageData.size+endPadding, 4)
+
+		bundle.putInt("size", imageData.size)
+		handler?.sendMessage(INTERACTION_CONV_END, bundle)
 
 		return data.toByteArray()
 	}
@@ -163,9 +197,15 @@ class BitmapFactory {
 		// add all pixels to the new array plus the padding for every line
 		for (i in 0 until imageData.size) {
 			paddedImageData.add(imageData[i])
-			if ((i+1) % dimension.width == 0)
+			if ((i+1) % dimension.width == 0) {
 				for (p in 0 until padding)
 					paddedImageData.add(0)
+
+				val bundle = Handler.Bundle()
+				bundle.putInt("progress", i)
+				bundle.putInt("size", imageData.size)
+				handler?.sendMessage(INTERACTION_CONV_PROGRESS, bundle)
+			}
 		}
 
 		return paddedImageData
@@ -210,14 +250,14 @@ class BitmapFactory {
 		// https://jonasjacek.github.io/colors/data.json
 
 		// load colors data from json file
-		val colorsFile = File("colors.json")
+		val colorsFile = File(/*jarLocation,*/ "colors.json")
 		val jsonText = if (colorsFile.exists()) {
 			// first look for file outside jar
 			colorsFile.readText()
 		} else {
 			// use embedded file if none outside is found
-			this.javaClass.getResource("colors.json") ?: return false
-			val colorsInput = this.javaClass.getResourceAsStream("colors.json").bufferedReader()
+			this.javaClass.classLoader.getResource("colors.json") ?: return false
+			val colorsInput = this.javaClass.classLoader.getResourceAsStream("colors.json").bufferedReader()
 			colorsInput.readText()
 		}
 

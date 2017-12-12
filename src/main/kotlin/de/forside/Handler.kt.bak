@@ -1,0 +1,67 @@
+package de.forside
+
+// from https://stackoverflow.com/questions/9558779/is-there-any-class-in-java-similar-to-android-os-handler-in-android
+
+import java.util.ArrayList
+
+class Handler {
+
+
+	internal var messages: ArrayList<Message>
+
+	inner class Message {
+
+		private val mWhat: Int
+		private var mObj: Any ?= null
+		private var mTarget: Handler
+
+		constructor(what: Int, obj: Any) {
+			mWhat = what
+			mObj = obj
+		}
+
+		constructor(what: Int, obj: Any, target: Handler) {
+			mWhat = what
+			mObj = obj
+			mTarget = target
+		}
+
+		constructor(what: Int, target: Handler) {
+			mWhat = what
+			mTarget = target
+		}
+
+		constructor(what: Int) {
+			mWhat = what
+		}
+
+		fun sendToTarget() {
+			mTarget.handleMessage(this)
+		}
+	}
+
+	init {
+		messages = ArrayList()
+	}
+
+	fun obtainMessage(what: Int, obj: Any): Message {
+		val message = Message(what, obj, this)
+		messages.add(message)
+		return message
+	}
+
+	fun obtainMessage(what: Int): Message {
+		val message = Message(what, this)
+		messages.add(message)
+		return message
+	}
+
+	fun handleMessage(msg: Message) {
+		messages.remove(msg)
+	}
+
+	fun hasMessages(): Boolean {
+		return !messages.isEmpty()
+	}
+
+}
