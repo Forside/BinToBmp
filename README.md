@@ -11,6 +11,12 @@ java -jar BinToBmp.jar <file>
 
 This will generate a bitmap to `<file>.bmp`
 
+Example output using the jar file as source:
+
+![BinToBmp to Bmp](https://image.prntscr.com/image/zr4OyhTxS3ShbtL2ro_FEg.png)
+
+---
+
 Upcoming features:
 
 - Memory improvements
