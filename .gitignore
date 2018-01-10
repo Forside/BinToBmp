@@ -1,5 +1,8 @@
 /.gradle/
-/.idea/
+/.idea/workspace.xml
+/.idea/codeStyles/
 /out/
 /build/
 /doc/
+
+*.iml

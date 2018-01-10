@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/BinToBmp.iml" filepath="$PROJECT_DIR$/BinToBmp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BinToBmp_main.iml" filepath="$PROJECT_DIR$/.idea/modules/BinToBmp_main.iml" group="BinToBmp" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BinToBmp_test.iml" filepath="$PROJECT_DIR$/.idea/modules/BinToBmp_test.iml" group="BinToBmp" />
+    </modules>
+  </component>
+</project>

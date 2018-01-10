@@ -15,7 +15,7 @@
  * along with BinToBmp.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.forside
+package de.forside.bintobmp
 
 
 import org.json.JSONArray
@@ -111,6 +111,7 @@ class BitmapFactory {
 			0, 0, 0, 0 // all colors
 		))
 
+		// Cancel execution if now color palette is found
 		if (!writeColorTable()) {
 			handler?.sendMessage(INTERACTION_CANCEL)
 			throw Exception("unable to load color palette")

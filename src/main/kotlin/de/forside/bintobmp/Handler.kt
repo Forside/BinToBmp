@@ -15,7 +15,7 @@
  * along with BinToBmp.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.forside
+package de.forside.bintobmp
 
 
 open class Handler {

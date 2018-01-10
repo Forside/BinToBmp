@@ -15,7 +15,7 @@
  * along with BinToBmp.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.forside
+package de.forside.bintobmp
 
 
 import org.fusesource.jansi.Ansi.ansi
@@ -81,9 +81,9 @@ private fun prepareProgressBar() {
 }
 
 private fun updateProgressBar(normalizedProgress: Double) {
-	val newProgressBarLength = Math.floor(normalizedProgress * progressBar.size-2).toInt()
+	val newProgressBarLength = Math.floor(normalizedProgress * (progressBar.size-2)).toInt()
 	if (newProgressBarLength > progressBarLength) {
-		for (i in progressBarLength+1 .. newProgressBarLength)
+		for (i in progressBarLength +1 .. newProgressBarLength)
 			progressBar[i] = '='
 		progressBar[newProgressBarLength+1] = '>'
 		progressBarLength = newProgressBarLength
@@ -92,7 +92,7 @@ private fun updateProgressBar(normalizedProgress: Double) {
 
 private fun convertFileToBitmap(file: File) {
 	// create output bitmap file
-	val bmp = File(file.nameWithoutExtension + ".bmp")
+	val bmp = File("${file.nameWithoutExtension}.bmp")
 	bmp.createNewFile()
 	val output = BufferedOutputStream(FileOutputStream(bmp))
 
